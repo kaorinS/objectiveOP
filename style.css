@@ -179,7 +179,7 @@ a {
 .wrapper {
   margin: 0 auto;
   width: 50%;
-  margin-top: 200px;
+  margin-top: 20px;
 }
 
 /* スタート画面
@@ -203,22 +203,41 @@ a {
 
 /* ゲーム画面
 --------------------------------*/
-/* 上部 */
+/* ロゴ */
+.game-logo {
+  font-size: 3.5rem;
+  text-align: center;
+  width: 100%;
+}
+/* 上部 ------------------------*/
 .game-top {
+  margin-top: 10px;
   overflow: hidden;
 }
 /* メイン */
-.game-main {
-  border-radius: 25px;
+.game-main,
+.game-info-box {
   float: left;
   width: 60%;
 }
 
+.game-main,
+.game-bottom {
+  border-radius: 25px;
+}
+
 /* サブ */
-.game-sub {
+/* 下部のサイド */
+.game-sub,
+.game-info-side {
   float: left;
   margin-left: 5%;
   width: 35%;
+}
+
+.game-info-side {
+  margin-left: 0;
+  width: 40%;
 }
 
 /* 相手の画面 */
@@ -278,6 +297,7 @@ a {
 
 .enemy-hoi-box {
   text-align: center;
+  border: none;
 }
 
 /* サブ画面のコメント欄 */
@@ -289,6 +309,48 @@ a {
 /* サブ画面のOKボタン */
 .sub-start-box {
   margin-top: 20px;
+}
+
+/* サブ画面、選択時コメント */
+.sub-comment-box {
+  margin-top: 25px;
+  position: relative;
+  text-align: center;
+}
+
+/* サブ画面　じゃんけん */
+/* サブ画面　あっちむいてホイ */
+.janken-select-box {
+  margin-top: 25px;
+  overflow: hidden;
+}
+
+.hoi-select-box {
+  margin-top: 65px;
+}
+
+.hoi-lr-box {
+  overflow: hidden;
+}
+
+/* 下部------------------------- */
+.game-bottom {
+  border: solid 10px #fb9;
+  margin-top: 30px;
+  overflow: hidden;
+}
+
+/* インフォ */
+.game-info-box {
+  font-size: 2.5rem;
+  padding: 10px 20px;
+}
+
+/* ライフ */
+.game-life-box {
+  font-size: 4rem;
+  margin-top: 45px;
+  text-align: center;
 }
 
 /*--------------------------------
@@ -353,12 +415,15 @@ a {
   padding-right: 7px;
 }
 
-.enemy-life.-h {
+/* ライフの色（敵味方同じ） */
+.enemy-life.-h,
+.my-life {
   color: red;
   text-shadow: 0px 0px 2px #000, 2px 2px 3px #000;
 }
 
-.enemy-life.-b {
+.enemy-life.-b,
+.my-life.-broken {
   color: #000;
 }
 
@@ -380,6 +445,7 @@ a {
 
 .enemy-hoi {
   background: #fff;
+  border: none;
   border-radius: 50%;
   color: #47f;
   font-size: 11rem;
@@ -399,6 +465,34 @@ a {
 
 .sub-comment-bottom {
   line-height: 2.5;
+}
+
+.select-comment {
+  font-size: 2rem;
+}
+
+.select-comment.hidden {
+  visibility: hidden;
+}
+
+.result-comment {
+  font-size: 6rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.result-comment.win {
+  color: red;
+}
+
+.result-comment.lose {
+  color: blue;
+}
+
+.result-comment.draw {
+  color: orange;
 }
 
 /* サブ画面　OKボタン */
@@ -424,4 +518,116 @@ a {
   background: #668ad8;
   box-shadow: 0px 0px 0px 5px #668ad8;
   cursor: pointer;
+}
+
+/* サブ画面　じゃんけん選択 */
+/* サブ画面　あっちむいてホイ選択 */
+.janken {
+  display: block;
+  width: 50%;
+}
+
+.janken.not-select,
+.hoi-select.not-select,
+.hoi-select-r.not-select {
+  opacity: 0.3;
+}
+
+.janken.-guu,
+.hoi-select.-up,
+.hoi-select.-down,
+.hoi-select-r.-up,
+.hoi-select-r.-down {
+  margin: 0 auto;
+}
+
+.janken.-choki,
+.janken.-paa,
+.hoi-select.-left,
+.hoi-select-r.-left {
+  float: left;
+}
+
+.hoi-select.-right,
+.hoi-select-r.-right {
+  float: right;
+}
+
+.hoi-select,
+.hoi-select-r {
+  background: none;
+  border: none;
+  color: #d30;
+  font-size: 8rem;
+}
+
+.fas.hoi-select,
+.fas.hoi-select-r {
+  display: block;
+}
+
+.hoi-select:hover {
+  color: #000;
+  cursor: pointer;
+}
+
+.fas.hoi-select.-up,
+.fas.hoi-select.-down,
+.fas.hoi-select-r.-up,
+.fas.hoi-select-r.-down {
+  text-align: center;
+}
+
+/* 下部------------------------- */
+.info-num {
+  font-size: 4rem;
+  padding-left: 20px;
+}
+
+/* テーブル */
+.info-table {
+  border-collapse: collapse;
+  width: 100%;
+  border: 2px solid #fdd;
+}
+
+.info-table:not(:first-of-type) {
+  margin-top: 10px;
+}
+
+.info-table-tr {
+  text-align: center;
+}
+
+.info-table-th {
+  background: #fdd;
+  width: 50%;
+}
+
+.info-table-empty {
+  padding: 20px;
+}
+
+.table-num {
+  font-size: 3rem;
+}
+
+/* はじめから */
+.game-restart {
+  position: relative;
+  display: block;
+  padding: 0.25em 0.5em;
+  text-decoration: none;
+  color: #fff;
+  background: #fd9535;
+  border: none;
+  border-bottom: solid 2px #d27d00;
+  border-radius: 4px;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2),
+    0 2px 2px rgba(0, 0, 0, 0.19);
+  font-weight: bold;
+  width: 80%;
+  margin: 0 auto;
+  margin-top: 20px;
+  font-size: 3rem;
 }
