@@ -60,8 +60,11 @@
                 <div class="sub-comment-start">
                     <span class="sub-num">1</span>かいせんめ<br>
                     <span class="sub-enemy-name">おかあさん</span>と<br>
-                    しょうぶ！！
+                    <span class="sub-comment-bottom">しょうぶ！！</span>
                 </div>
+                <form class="sub-start-box" method="post">
+                    <input type="submit" class="sub-start-ok" name="ok" value="O K">
+                </form>
             </div>
         </div>
     </div>
