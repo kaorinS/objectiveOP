@@ -1,0 +1,362 @@
+/*--------------------------------
+  リセットcss
+--------------------------------*/
+/* Box sizingの定義 */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* デフォルトのpadding,margin,borderを削除 */
+html,
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+a,
+p,
+span,
+em,
+small,
+strong,
+sub,
+sup,
+mark,
+del,
+ins,
+strike,
+abbr,
+dfn,
+blockquote,
+q,
+cite,
+code,
+pre,
+ol,
+ul,
+li,
+dl,
+dt,
+dd,
+div,
+section,
+article,
+main,
+aside,
+nav,
+header,
+hgroup,
+footer,
+img,
+figure,
+figcaption,
+address,
+time,
+audio,
+video,
+canvas,
+iframe,
+details,
+summary,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* フォントのcssリセット */
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-size: 1.6rem;
+  line-height: 1.4;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 100%;
+}
+
+* {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* bodyのデフォルトを定義 */
+body {
+  min-height: 100%;
+  scroll-behavior: smooth;
+  line-height: 1.5;
+}
+
+/* class属性を持つul、ol要素のリストスタイルを削除 */
+ul[class],
+ol[class] {
+  list-style: none;
+}
+
+/* img要素の扱いを簡単にする */
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* article要素内の要素に自然な流れとリズムを定義 */
+article > * + * {
+  margin-top: 1em;
+}
+
+/* inputやbuttonなどのフォントは継承を定義 */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* リンクの下線表示を無くす */
+a:link,
+a:visited,
+a:hover {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* レイアウトリセット */
+article,
+aside,
+footer,
+header,
+nav,
+section,
+main {
+  display: block;
+}
+
+/* aのカーソルを変更 */
+a {
+  cursor: pointer;
+}
+
+/*--------------------------------
+  フォント・色
+--------------------------------*/
+/* google fonts */
+/* font-family: "Kosugi Maru", sans-serif; */
+
+/* メインの色 */
+.main-color {
+  background: #fc4;
+  border-color: #fc4;
+}
+
+/*--------------------------------
+  外枠
+--------------------------------*/
+/* 全体 */
+.wrapper {
+  margin: 0 auto;
+  width: 50%;
+  margin-top: 200px;
+}
+
+/* スタート画面
+--------------------------------*/
+.main {
+  border-radius: 25px;
+  border-style: solid;
+  border-width: 3px;
+}
+
+/* タイトル */
+.title-container {
+  margin-top: 60px;
+}
+
+/* はじめる */
+.start-container {
+  height: 120px;
+  margin-top: 45px;
+}
+
+/* ゲーム画面
+--------------------------------*/
+.game-main {
+  border-radius: 25px;
+  width: 60%;
+}
+
+/* 相手の画面 */
+.enemy-box {
+  overflow: hidden;
+}
+
+/* 相手画面2分割 */
+.enemy-box-1,
+.enemy-box-2 {
+  width: 50%;
+  float: left;
+}
+
+.enemy-box-1 {
+  margin-right: -35px;
+}
+
+.enemy-box-2 {
+  padding-top: 35px;
+}
+
+/* 相手の名前 */
+.enemy-name-box {
+  padding-top: 50px;
+  padding-bottom: 20px;
+  text-align: center;
+}
+
+/* 相手の画像 */
+.enemy-img-box {
+  margin-bottom: 15px;
+}
+
+/* 相手のライフ */
+.enemy-life-box {
+  margin-bottom: 50px;
+  text-align: center;
+}
+
+/* 相手のコメント欄 */
+.enemy-comment-box {
+  position: relative;
+}
+
+.enemy-comment-box2 {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* 相手のアクション */
+.enemy-action-box {
+  margin-top: 35px;
+}
+
+.enemy-hoi-box {
+  text-align: center;
+}
+
+/*--------------------------------
+  内側
+--------------------------------*/
+/* スタート画面
+--------------------------------*/
+/* タイトル */
+.h1.title {
+  color: #e90;
+  font-size: 6rem;
+  letter-spacing: 1rem;
+  text-align: center;
+  text-shadow: 5px 5px 3px #ffffff, -5px 5px 3px #ffffff, 5px -5px 3px #ffffff,
+    -5px -5px 3px #ffffff, 5px 0px 3px #ffffff, 0px 5px 3px #ffffff,
+    -5px 0px 3px #ffffff, 0px -5px 3px #ffffff;
+}
+
+/* スタートボタン */
+.startbutton {
+  border-radius: 50%; /* 角丸       */
+  font-size: 24pt; /* 文字サイズ */
+  text-align: center; /* 文字位置   */
+  cursor: pointer; /* カーソル   */
+  padding: 17px 65px; /* 余白       */
+  background: #663300; /* 背景色     */
+  color: #ffffff; /* 文字色     */
+  line-height: 1em; /* 1行の高さ  */
+  transition: 0.3s; /* なめらか変化 */
+  box-shadow: 6px 6px 3px #666666; /* 影の設定 */
+  border: 2px solid #663300; /* 枠の指定 */
+  display: block;
+  margin: 0 auto;
+}
+
+.startbutton:hover {
+  box-shadow: none; /* カーソル時の影消去 */
+  color: #663300; /* 背景色     */
+  background: #ffffff; /* 文字色     */
+}
+
+/* ゲーム画面
+--------------------------------*/
+/* 相手の名前 */
+.enemy-name {
+  font-family: "Kosugi Maru", sans-serif;
+  font-size: 2.5rem;
+}
+
+/* 相手の画像 */
+.enemy-img {
+  margin: 0 auto;
+  width: 70%;
+}
+
+/* 相手のライフ */
+.enemy-life {
+  font-size: 2.8rem;
+}
+
+.enemy-life:not(:last-child) {
+  padding-right: 7px;
+}
+
+.enemy-life.-h {
+  color: red;
+  text-shadow: 0px 0px 2px #000, 2px 2px 3px #000;
+}
+
+.enemy-life.-b {
+  color: #000;
+}
+
+/* 相手のコメント画像 */
+.enemy-comment-img {
+  transform: scale(-1, 1);
+}
+
+/* 相手のコメント */
+.enemy-comment {
+  font-size: 2rem;
+}
+
+/* 相手のアクション */
+.enemy-action-img {
+  margin: 0 auto;
+  width: 60%;
+}
+
+.enemy-hoi {
+  background: #fff;
+  border-radius: 50%;
+  color: #47f;
+  font-size: 11rem;
+}
