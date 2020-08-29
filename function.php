@@ -477,3 +477,35 @@ class Enemy
     return $key;
   }
 }
+// 自分
+class Myself
+{
+  private $hp;
+  private $hpMax;
+  public function __construct($hp, $hpMax)
+  {
+    $this->hp = $hp;
+    $this->hpMax = $hpMax;
+  }
+
+  public function setHp($num)
+  {
+    $this->hp = $num;
+  }
+  public function getHp()
+  {
+    return $this->hp;
+  }
+  // HPの回復
+  public function recovery()
+  {
+    if (!mt_rand(0, 3)) {  //4分の1でHPを2回復する
+      $this->hp += 2;
+    } else {
+      $this->hp += 1;
+    }
+    // 最大値を超えないようにする
+    $this->hp = min($this->hp, $this->hpMax);
+    return $this->hp;
+  }
+}
