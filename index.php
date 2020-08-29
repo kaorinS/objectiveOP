@@ -164,6 +164,54 @@
                 </form>
             </div>
         </div>
+        <!-- 結果発表 -->
+        <!-- <div class="result main-color">
+            <div class="star-box">
+                <i class="fas fa-star -result"></i><i class="fas fa-star -result"></i><i class="fas fa-star -result"></i>
+            </div>
+            <div class="result-comment">
+                すごいね！
+            </div>
+            <div class="result-enemy-num-box">
+                ぜんぶで　<span class="result-enemy-num">5</span>　にん　に　かったよ
+            </div>
+            <div class="result-grade">
+                <table class="result-table">
+                    <tbody>
+                        <tr class="result-table-tr">
+                            <th class="result-table-th" rowspan="2">じゃんけん</th>
+                            <td>かち</td>
+                            <td class="result-table-num">40</td>
+                            <td>かい</td>
+                        </tr>
+                        <tr class="result-table-tr">
+                            <td>まけ</td>
+                            <td class="result-table-num">26</td>
+                            <td>かい</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="result-table">
+                    <tbody>
+                        <tr class="result-table-tr">
+                            <th class="result-table-th" rowspan="2">あっちむいて<br>ホイ</th>
+                            <td>かち</td>
+                            <td class="result-table-num">15</td>
+                            <td>かい</td>
+                        </tr>
+                        <tr class="result-table-tr">
+                            <td>まけ</td>
+                            <td class="result-table-num">10</td>
+                            <td>かい</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <form class="result-replay-box" method="post">
+                <input type="submit" class="result-replay" name="restart" value="もういちど　あそぶ">
+            </form>
+        </div> -->
+    </div>
 </body>
 
 </html>
