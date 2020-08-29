@@ -179,26 +179,64 @@ a {
 .wrapper {
   margin: 0 auto;
   width: 50%;
-  margin-top: 20px;
 }
 
-/* スタート画面
+/* スタート画面・リザルト画面
 --------------------------------*/
-.main {
+.main,
+.result {
   border-radius: 25px;
   border-style: solid;
   border-width: 3px;
+  margin-top: 200px;
+}
+
+.result {
+  margin-top: 100px;
+  padding: 10px;
 }
 
 /* タイトル */
 .title-container {
-  margin-top: 60px;
+  margin-top: 80px;
 }
 
 /* はじめる */
 .start-container {
   height: 120px;
   margin-top: 45px;
+}
+
+/* 結果：ほし */
+.star-box {
+  /* color: #fff; */
+  color: #ff3;
+  font-size: 10rem;
+  text-align: center;
+  /* text-shadow: 0px 11px 5px #ddd; */
+  text-shadow: 2px 5px 4px #ffd;
+}
+
+/* 結果：コメント */
+.result-comment {
+  font-size: 5rem;
+  padding-top: 10px;
+  text-align: center;
+}
+
+.result-enemy-num-box {
+  font-size: 3rem;
+  text-align: center;
+}
+
+/* 結果：成績まとめ */
+.result-grade {
+  margin-top: 20px;
+}
+
+.result-replay-box {
+  margin-top: 40px;
+  margin-bottom: 20px;
 }
 
 /* ゲーム画面
@@ -356,7 +394,7 @@ a {
 /*--------------------------------
   内側
 --------------------------------*/
-/* スタート画面
+/* スタート画面・リザルト画面
 --------------------------------*/
 /* タイトル */
 .h1.title {
@@ -390,6 +428,16 @@ a {
   box-shadow: none; /* カーソル時の影消去 */
   color: #663300; /* 背景色     */
   background: #ffffff; /* 文字色     */
+}
+
+/* リザルト・星 */
+.fa-star.-result:not(:last-child) {
+  padding-right: 50px;
+}
+
+/* リザルト：相手の数 */
+.result-enemy-num {
+  font-size: 4rem;
 }
 
 /* ゲーム画面
@@ -475,7 +523,7 @@ a {
   visibility: hidden;
 }
 
-.result-comment {
+.sub-result-comment {
   font-size: 6rem;
   position: absolute;
   top: 50%;
@@ -483,15 +531,15 @@ a {
   transform: translate(-50%, -50%);
 }
 
-.result-comment.win {
+.sub-result-comment.win {
   color: red;
 }
 
-.result-comment.lose {
+.sub-result-comment.lose {
   color: blue;
 }
 
-.result-comment.draw {
+.sub-result-comment.draw {
   color: orange;
 }
 
@@ -585,35 +633,57 @@ a {
 }
 
 /* テーブル */
-.info-table {
+.info-table,
+.result-table {
   border-collapse: collapse;
   width: 100%;
   border: 2px solid #fdd;
 }
 
-.info-table:not(:first-of-type) {
+.result-table {
+  border: 4px solid #f73;
+  font-size: 2.5rem;
+  margin: 0 auto;
+  width: 80%;
+}
+
+.info-table:not(:first-of-type),
+.result-table:not(:first-of-type) {
   margin-top: 10px;
 }
 
-.info-table-tr {
+.info-table-tr,
+.result-table-tr {
   text-align: center;
 }
 
-.info-table-th {
+.info-table-th,
+.result-table-th {
   background: #fdd;
   width: 50%;
+}
+
+.result-table-th {
+  background: #f73;
+  font-size: 3rem;
+}
+
+.result-table-tr > td {
+  background: #fff;
 }
 
 .info-table-empty {
   padding: 20px;
 }
 
-.table-num {
+.table-num,
+.result-table-num {
   font-size: 3rem;
 }
 
 /* はじめから */
-.game-restart {
+.game-restart,
+.result-replay {
   position: relative;
   display: block;
   padding: 0.25em 0.5em;
@@ -630,4 +700,16 @@ a {
   margin: 0 auto;
   margin-top: 20px;
   font-size: 3rem;
+}
+
+.result-replay {
+  border-radius: 50px;
+  font-size: 4rem;
+  padding: 1.5rem 3rem;
+  width: 60%;
+}
+
+.game-restart:hover,
+.result-replay:hover {
+  cursor: pointer;
 }
