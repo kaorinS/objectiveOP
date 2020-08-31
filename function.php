@@ -35,6 +35,13 @@ session_start();
 // ===================================
 // 相手格納用
 $enemies = array();
+// 相手の表情
+$enemyImg = '';
+// あっちむいてホイの結果
+$hoiResult = '';
+// 結果のグレード
+$excellent = 10;
+$great = 5;
 
 // ===================================
 // クラス
@@ -171,6 +178,7 @@ class hoiPattern
 abstract class Life
 {
   protected $hp;
+  protected $hpMax;
   public function setHp($num)
   {
     $this->hp = $num;
@@ -179,6 +187,11 @@ abstract class Life
   public function getHp()
   {
     return $this->hp;
+  }
+
+  public function getHpMax()
+  {
+    return $this->hpMax;
   }
 
   // ライフを1減らす
@@ -201,6 +214,7 @@ class Enemy extends Life
   {
     $this->name = $name;
     $this->hp = $hp;
+    $this->hpMax = $hp;
     $this->type = $type;
     $this->img1 = $imgNormal;
     $this->img2 = $imgLaugh;
@@ -584,7 +598,6 @@ class Enemy extends Life
 // プレイヤー
 class Myself extends Life
 {
-  private $hpMax;
   public function __construct($hp, $hpMax)
   {
     $this->hp = $hp;
@@ -631,9 +644,13 @@ $enemies[] = new Enemy('おにいさん', mt_rand(1, 3), Type::MAN1, 'image/whit
 $enemies[] = new Enemy('おねえさん', 2, Type::WOMAN2, 'image/whitewoman1_smile.png', 'image/whitewoman1_laugh.png', 'image/whitewoman1_cry.png', Play::canBeUsedHand(jankenPattern::ALL), Play::canBeUseDirection(hoiPattern::RAND2));
 $enemies[] = new Enemy('おねえさん', 2, Type::WOMAN1, 'image/woman03_smile.png', 'image/woman01_laugh.png', 'image/woman04_cry.png', Play::canBeUsedHand(jankenPattern::GUU), Play::canBeUseDirection(hoiPattern::RIGHT));
 
+// ===================================
+// 関数
+// ===================================
 function createEnemy()
 {
   global $enemies;
+  global $enemyImg;
   // $enemies のキーの最大値を調べる
   $keys = array_keys($enemies);
   $keysMax = max($keys);
@@ -646,6 +663,7 @@ function createEnemy()
   $_SESSION['hoiWinCount'] = 0;
   $_SESSION['hoiLoseCount'] = 0;
   $_SESSION['matchNum'] += 1;
+  $enemyImg = $_SESSION['enemy']->getImgNormal();
 }
 
 function createMyself()
@@ -674,11 +692,14 @@ function gameOver()
 
 function playJanken($player, $enemy)
 {
+  global $enemyImg;
   $player = (int)$player;
   $enemy = (int)$enemy;
   if ($enemy !== $player) {  //異なる手を出した
     // プレイヤーが勝った場合
     if (($enemy === 1 && $player === 3) || ($enemy === 2 && $player === 1) || ($enemy === 3 && $player === 2)) {
+      // 相手の表情
+      $enemyImg = $_SESSION['enemy']->getImgSad();
       // 相手の台詞
       $_SESSION['enemy']->sayLose();
       // 勝ち加算
@@ -687,6 +708,8 @@ function playJanken($player, $enemy)
       // 結果表示
       $_SESSION['jankenResult'] = 0; //かち
     } else {  //プレイヤーが負けた場合
+      // 相手の表情
+      $enemyImg = $_SESSION['enemy']->getImgLaugh();
       // 相手の台詞
       $_SESSION['enemy']->sayWin();
       // 負け加算
@@ -696,6 +719,8 @@ function playJanken($player, $enemy)
       $_SESSION['jankenResult'] = 1; //まけ
     }
   } else {  //同じ手を出した＝あいこ
+    // 相手の表情
+    $enemyImg = $_SESSION['enemy']->getImgNormal();
     // 相手の台詞
     $_SESSION['enemy']->sayDraw();
     // 結果表示
@@ -705,10 +730,14 @@ function playJanken($player, $enemy)
 
 function playHoi($player, $enemy)
 {
+  global $enemyImg;
+  global $hoiResult;
   $player = (int)$player;
   $enemy = (int)$enemy;
   if ($player === $enemy) {  //同じ方向を選んだ
     if ((int)$_SESSION['jankenResult'] === 0) {  // プレイヤーがじゃんけんに勝った
+      // 相手の表情
+      $enemyImg = $_SESSION['enemy']->getImgSad();
       // 相手の台詞
       $_SESSION['enemy']->sayPicked();
       // 勝ち加算
@@ -719,6 +748,8 @@ function playHoi($player, $enemy)
       // 相手のライフを減らす
       $_SESSION['enemy']->Damage();
     } else {  //プレイヤーがじゃんけんに負けた
+      // 相手の表情
+      $enemyImg = $_SESSION['enemy']->getImgLaugh();
       // 相手の台詞
       $_SESSION['enemy']->sayHit();
       // 負け加算
@@ -731,15 +762,34 @@ function playHoi($player, $enemy)
     }
   } else {  //異なる方向を選んだ
     if ((int)$_SESSION['jankenResult'] === 0) {  //プレイヤーがじゃんけんに勝った
+      // 相手の表情
+      $enemyImg = $_SESSION['enemy']->getImgLaugh();
       // 相手の台詞
       $_SESSION['enemy']->sayAvoid();
       // 結果表示
       $hoiResult = 2; //じゃんけんに勝ったけど外した
     } else {  //プレイヤーがじゃんけんに負けた
+      // 相手の表情
+      $enemyImg = $_SESSION['enemy']->getImgSad();
       // 相手の台詞
       $_SESSION['enemy']->sayMiss();
       // 結果表示
       $hoiResult = 3;  // じゃんけんに負けたけど外れた
+    }
+  }
+}
+
+function resultComment()
+{
+  global $excellent;
+  global $great;
+  if ($_SESSION['takeDownCount'] >= $excellent) {
+    echo 'すごいね！';
+  } else {
+    if ($_SESSION['takeDownCount'] >= $great) {
+      echo 'やったね！';
+    } else {
+      echo 'がんばったね！';
     }
   }
 }
@@ -789,8 +839,9 @@ if (!empty($_POST)) {
     if ((int)$_SESSION['myself']->getHp() === 0) {
       gameOver();
     } else {
-      // 相手のライフが0になったら次の相手へ
+      // 相手のライフが0になったらライフを回復して次の相手へ
       if ((int)$_SESSION['enemy']->getHp() === 0) {
+        $_SESSION['myself']->recovery();
         createEnemy();
         $_SESSION['takeDownCount'] += 1;
       }
