@@ -34,7 +34,7 @@ session_start();
 // 変数（初期）
 // ===================================
 // 相手格納用
-$enemy = array();
+$enemies = array();
 
 // ===================================
 // クラス
@@ -81,7 +81,7 @@ class Play implements PlayInterface
       $janken = $choice;
       return $janken;
     }
-    debug('使えるじゃんけんの手→→→' . print_r($janken, true));
+    debug('相手が使えるじゃんけんの手→→→' . print_r($janken, true));
   }
   // 使用可能なあっちむいてホイの方向を決める
   public static function canBeUseDirection($pattern)
@@ -127,7 +127,7 @@ class Play implements PlayInterface
       $hoi = $choice;
       return $hoi;
     }
-    debug('使えるあっちむいてホイの方向→→→' . print_r($hoi, true));
+    debug('相手が使えるあっちむいてホイの方向→→→' . print_r($hoi, true));
   }
 }
 // 種別クラス
@@ -143,6 +143,7 @@ class Type
   const GIRL2 = 8;
   const DOG = 9;
   const CAT = 10;
+  const GRANDPARENTS = 11;
 }
 // じゃんけんパターンクラス
 class jankenPattern
@@ -166,34 +167,10 @@ class hoiPattern
   const LEFT = 7;
   const RIGHT = 8;
 }
-// 相手クラス
-class Enemy
+// 生き物クラス
+abstract class Life
 {
-  private $name;
-  private $hp;
-  private $img1;
-  private $img2;
-  private $img3;
-  private $jHand;
-  private $hDirection;
-
-  public function __construct($name, $hp, $type, $img1, $img2, $img3, $jHand, $hDirection)
-  {
-    $this->name = $name;
-    $this->hp = $hp;
-    $this->type = $type;
-    $this->img1 = $img1;
-    $this->img2 = $img2;
-    $this->img3 = $img3;
-    $this->jHand = $jHand;
-    $this->hDirection = $hDirection;
-  }
-
-  public function getName()
-  {
-    return $this->name;
-  }
-
+  protected $hp;
   public function setHp($num)
   {
     $this->hp = $num;
@@ -204,24 +181,57 @@ class Enemy
     return $this->hp;
   }
 
+  // ライフを1減らす
+  public function Damage()
+  {
+    $this->setHp($this->getHp() - 1);
+  }
+}
+// 相手クラス
+class Enemy extends Life
+{
+  private $name;
+  private $imgNormal;
+  private $imgLaugh;
+  private $imgSad;
+  private $jHand;
+  private $hDirection;
+
+  public function __construct($name, $hp, $type, $imgNormal, $imgLaugh, $imgSad, $jHand, $hDirection)
+  {
+    $this->name = $name;
+    $this->hp = $hp;
+    $this->type = $type;
+    $this->img1 = $imgNormal;
+    $this->img2 = $imgLaugh;
+    $this->img3 = $imgSad;
+    $this->jHand = $jHand;
+    $this->hDirection = $hDirection;
+  }
+
+  public function getName()
+  {
+    return $this->name;
+  }
+
   public function getType()
   {
     return $this->type;
   }
 
-  public function getImg1()
+  public function getImgNormal()
   {
-    return $this->img1;
+    return $this->imgNormal;
   }
 
-  public function getImg2()
+  public function getImgLaugh()
   {
-    return $this->img2;
+    return $this->imgLaugh;
   }
 
-  public function getImg3()
+  public function getImgSad()
   {
-    return $this->img3;
+    return $this->imgSad;
   }
 
   public function getJHand()
@@ -275,6 +285,9 @@ class Enemy
       case TYPE::CAT:
         $this->sayWord('ニャァ〜');
         break;
+      case TYPE::GRANDPARENTS:
+        $this->sayWord('よいしょっと');
+        break;
     }
   }
   // 勝利
@@ -310,6 +323,9 @@ class Enemy
         break;
       case TYPE::CAT:
         $this->sayWord('かったニャ〜');
+        break;
+      case TYPE::GRANDPARENTS:
+        $this->sayWord('ほっほっほ');
         break;
     }
   }
@@ -347,6 +363,9 @@ class Enemy
       case TYPE::CAT:
         $this->sayWord('まけたニャ〜');
         break;
+      case TYPE::GRANDPARENTS:
+        $this->sayWord('おやまあ');
+        break;
     }
   }
   // 引き分け
@@ -382,6 +401,9 @@ class Enemy
         break;
       case TYPE::CAT:
         $this->sayWord('あいこニャ〜');
+        break;
+      case TYPE::GRANDPARENTS:
+        $this->sayWord('あいこだねぇ');
         break;
     }
   }
@@ -419,6 +441,47 @@ class Enemy
       case TYPE::CAT:
         $this->sayWord('ニャ〜ン');
         break;
+      case TYPE::GRANDPARENTS:
+        $this->sayWord('ほっほっほ');
+        break;
+    }
+  } // あっちむいてホイ（当てられた)
+  public function sayPicked()
+  {
+    switch ($this->type) {
+      case Type::MAN1:
+        $this->sayWord('しまった！');
+        break;
+      case Type::MAN2:
+        $this->sayWord('あたってしまったね');
+        break;
+      case Type::WOMAN1:
+        $this->sayWord('きゃ〜');
+        break;
+      case Type::WOMAN2:
+        $this->sayWord('あたっちゃったわ');
+        break;
+      case Type::BOY1:
+        $this->sayWord('やっちゃった！');
+        break;
+      case TYPE::BOY2:
+        $this->sayWord('うわわ');
+        break;
+      case TYPE::GIRL1:
+        $this->sayWord('うそ〜');
+        break;
+      case TYPE::GIRL2:
+        $this->sayWord('いや〜ん');
+        break;
+      case TYPE::DOG:
+        $this->sayWord('クゥ〜ン！');
+        break;
+      case TYPE::CAT:
+        $this->sayWord('ニャァ〜');
+        break;
+      case TYPE::GRANDPARENTS:
+        $this->sayWord('ホッホッホ');
+        break;
     }
   }
   // あっちむいてホイ（外す）
@@ -455,32 +518,72 @@ class Enemy
       case TYPE::CAT:
         $this->sayWord('ニャオ〜');
         break;
+      case TYPE::GRANDPARENTS:
+        $this->sayWord('ホッホッホ');
+        break;
+    }
+  } // あっちむいてホイ（命中）
+  public function sayHit()
+  {
+    switch ($this->type) {
+      case Type::MAN1:
+        $this->sayWord('よ〜し！');
+        break;
+      case Type::MAN2:
+        $this->sayWord('ふふふっ');
+        break;
+      case Type::WOMAN1:
+        $this->sayWord('当てたわっ！');
+        break;
+      case Type::WOMAN2:
+        $this->sayWord('うふふ♡');
+        break;
+      case Type::BOY1:
+        $this->sayWord('よっしゃー！');
+        break;
+      case TYPE::BOY2:
+        $this->sayWord('やったやった！');
+        break;
+      case TYPE::GIRL1:
+        $this->sayWord('やった〜〜');
+        break;
+      case TYPE::GIRL2:
+        $this->sayWord('わーいわーい');
+        break;
+      case TYPE::DOG:
+        $this->sayWord('やったワン！');
+        break;
+      case TYPE::CAT:
+        $this->sayWord('ニャァ〜〜ン');
+        break;
+      case TYPE::GRANDPARENTS:
+        $this->sayWord('ほっほっほ');
+        break;
     }
   }
 
-  // じゃんけんする(選ばれた手の中からじゃんけんする)
-  public function playJanken()
+  // じゃんけんで出す手を選ぶ(選ばれた手の中からじゃんけんする)
+  public function selectHand()
   {
-    debug('***** playJanken 実行*****');
-    debug('使えるじゃんけんの手→→→' . print_r($this->jHand, true));
+    debug('***** selectHand 実行*****');
+    debug('相手が使えるじゃんけんの手→→→' . print_r($this->jHand, true));
     $key = array_rand($this->jHand);
-    debug('選んだじゃんけん→→→' . print_r($this->jHand[$key], true));
+    debug('相手が選んだじゃんけん→→→' . print_r($this->jHand[$key], true));
     return $key;
   }
   // あっちむいてホイする(選ばれた方向の中から選択する)
-  public function playHoi()
+  public function selectDirection()
   {
-    debug('***** playHoi 実行 *****');
-    debug('使える方向→→→' . print_r($this->hDirection));
+    debug('***** selectDirection 実行 *****');
+    debug('相手が使える方向→→→' . print_r($this->hDirection));
     $key = array_rand($this->jHand);
-    debug('選んだ方向→→→' . print_r($this->jHand[$key], true));
+    debug('相手が選んだ方向→→→' . print_r($this->jHand[$key], true));
     return $key;
   }
 }
-// 自分
-class Myself
+// プレイヤー
+class Myself extends Life
 {
-  private $hp;
   private $hpMax;
   public function __construct($hp, $hpMax)
   {
@@ -488,14 +591,6 @@ class Myself
     $this->hpMax = $hpMax;
   }
 
-  public function setHp($num)
-  {
-    $this->hp = $num;
-  }
-  public function getHp()
-  {
-    return $this->hp;
-  }
   // HPの回復
   public function recovery()
   {
@@ -508,4 +603,198 @@ class Myself
     $this->hp = min($this->hp, $this->hpMax);
     return $this->hp;
   }
+}
+
+// ===================================
+// インスタンス生成
+// ===================================
+// プレイヤー自身
+$myself = new Myself(10, 10);
+// 相手
+$enemies[] = new Enemy('おにいさん', mt_rand(2, 3), Type::MAN1, 'image/blackman1_smile.png', 'image/blackman1_laugh.png', 'image/blackman1_cry.png', Play::canBeUsedHand(jankenPattern::ALL), Play::canBeUseDirection(hoiPattern::RAND2));
+$enemies[] = new Enemy('おねえさん', mt_rand(2, 3), Type::WOMAN1, 'image/blackwoman1_smile.png', 'image/blackwoman1_laugh.png', 'image/blackwoman1_cry.png', Play::canBeUsedHand(jankenPattern::RAND1), Play::canBeUseDirection(hoiPattern::RAND3));
+$enemies[] = new Enemy('おとこのこ', 3, Type::BOY1, 'image/boy03_smile.png', 'image/boy01_laugh.png', 'image/boy04_cry.png', Play::canBeUsedHand(jankenPattern::RAND2), Play::canBeUseDirection(hoiPattern::RAND1));
+$enemies[] = new Enemy('おにいさん', 2, Type::MAN2, 'image/business03_smile.png', 'image/business01_laugh.png', 'image/business04_cry.png', Play::canBeUsedHand(jankenPattern::ALL), Play::canBeUseDirection(hoiPattern::RAND2));
+$enemies[] = new Enemy('ねこちゃん', mt_rand(1, 3), Type::CAT, 'image/cat1_smile.png', 'image/cat4_laugh.png', 'image/cat3_cry.png', Play::canBeUsedHand(jankenPattern::GUU), Play::canBeUseDirection(hoiPattern::RAND1));
+$enemies[] = new Enemy('おいしゃさん', mt_rand(2, 3), Type::MAN2, 'image/doctor1_smile.png', 'image/doctor1_laugh.png', 'image/doctor1_cry.png', Play::canBeUsedHand(jankenPattern::RAND2), Play::canBeUseDirection(hoiPattern::ALL));
+$enemies[] = new Enemy('おいしゃさん', mt_rand(2, 3), Type::WOMAN1, 'image/doctorw1_smile.png', 'image/doctorw1_laugh.png', 'image/doctorw1_cry.png', Play::canBeUsedHand(jankenPattern::CHOKI), Play::canBeUseDirection(hoiPattern::RAND2));
+$enemies[] = new Enemy('いぬさん', mt_rand(2, 4), Type::DOG, 'image/dog1_smile.png', 'image/dog4_laugh.png', 'image/dog3_cry.png', Play::canBeUsedHand(jankenPattern::RAND1), Play::canBeUseDirection(hoiPattern::RAND1));
+$enemies[] = new Enemy('おんなのこ', mt_rand(2, 3), Type::GIRL1, 'image/girl03_smile.png', 'image/girl01_laugh.png', 'image/girl04_cry.png', Play::canBeUsedHand(jankenPattern::RAND2), Play::canBeUseDirection(hoiPattern::DOWN));
+$enemies[] = new Enemy('おとうさん', mt_rand(3, 4), Type::MAN1, 'image/man03_smile.png', 'image/man01_laugh.png', 'image/man04_cry.png', Play::canBeUsedHand(jankenPattern::ALL), Play::canBeUseDirection(hoiPattern::ALL));
+$enemies[] = new Enemy('かんごしさん', 2, Type::MAN1, 'image/nurse_man1_smile.png', 'image/nurse_man1_laugh.png', 'image/nurse_man1_cry.png', Play::canBeUsedHand(jankenPattern::PAA), Play::canBeUseDirection(hoiPattern::RAND3));
+$enemies[] = new Enemy('おばあちゃん', mt_rand(1, 3), Type::GRANDPARENTS, 'image/obaasan03_smile.png', 'image/obaasan01_laugh.png', 'image/obaasan01_laugh.png', Play::canBeUsedHand(jankenPattern::RAND1), Play::canBeUseDirection(hoiPattern::RAND1));
+$enemies[] = new Enemy('おかあさん', mt_rand(3, 4), Type::WOMAN2, 'image/obasan03_smile.png', 'image/obasan01_laugh.png', 'image/obasan04_cry.png', Play::canBeUsedHand(jankenPattern::ALL), Play::canBeUseDirection(hoiPattern::ALL));
+$enemies[] = new Enemy('おじいちゃん', mt_rand(1, 3), Type::GRANDPARENTS, 'image/ojiisan03_smile.png', 'image/ojiisan01_laugh.png', 'image/ojiisan01_laugh.png', Play::canBeUsedHand(jankenPattern::RAND2), Play::canBeUseDirection(hoiPattern::RAND2));
+$enemies[] = new Enemy('おとこのこ', 3, Type::BOY2, 'image/whiteboy1_1smile.png', 'image/whiteboy1_laugh.png', 'image/whiteboy1_3cry.png', Play::canBeUsedHand(jankenPattern::RAND1), Play::canBeUseDirection(hoiPattern::LEFT));
+$enemies[] = new Enemy('おんなのこ', mt_rand(2, 3), Type::GIRL2, 'image/whitegirl1_1smile.png', 'image/whitegirl1_2laugh.png', 'image/whitegirl1_3cry.png', Play::canBeUsedHand(jankenPattern::ALL), Play::canBeUseDirection(hoiPattern::RAND1));
+$enemies[] = new Enemy('おにいさん', mt_rand(1, 3), Type::MAN1, 'image/whiteman1_smile.png', 'image/whiteman1_laugh.png', 'image/whiteman1_cry.png', Play::canBeUsedHand(jankenPattern::RAND1), Play::canBeUseDirection(hoiPattern::ALL));
+$enemies[] = new Enemy('おねえさん', 2, Type::WOMAN2, 'image/whitewoman1_smile.png', 'image/whitewoman1_laugh.png', 'image/whitewoman1_cry.png', Play::canBeUsedHand(jankenPattern::ALL), Play::canBeUseDirection(hoiPattern::RAND2));
+$enemies[] = new Enemy('おねえさん', 2, Type::WOMAN1, 'image/woman03_smile.png', 'image/woman01_laugh.png', 'image/woman04_cry.png', Play::canBeUsedHand(jankenPattern::GUU), Play::canBeUseDirection(hoiPattern::RIGHT));
+
+function createEnemy()
+{
+  global $enemies;
+  // $enemies のキーの最大値を調べる
+  $keys = array_keys($enemies);
+  $keysMax = max($keys);
+  // 相手をランダムで選ぶ
+  $enemy = $enemies[mt_rand(0, $keysMax)];
+  $_SESSION['enemy'] = $enemy;
+  // セッションを更新する
+  $_SESSION['jankenWinCount'] = 0;
+  $_SESSION['jankenLoseCount'] = 0;
+  $_SESSION['hoiWinCount'] = 0;
+  $_SESSION['hoiLoseCount'] = 0;
+  $_SESSION['matchNum'] += 1;
+}
+
+function createMyself()
+{
+  global $myself;
+  $_SESSION['myself'] = $myself;
+}
+
+function init()
+{
+  $_SESSION['totalJankenWinCount'] = 0;
+  $_SESSION['totalJankenLoseCount'] = 0;
+  $_SESSION['totalHoiWinCount'] = 0;
+  $_SESSION['totalHoiLoseCount'] = 0;
+  $_SESSION['takeDownCount'] = 0;
+  $_SESSION['matchNum'] = 0;
+  $_SESSION['gameOver'] = false;
+  createEnemy();
+  createMyself();
+}
+
+function gameOver()
+{
+  $_SESSION['gameOver'] = true;
+}
+
+function playJanken($player, $enemy)
+{
+  $player = (int)$player;
+  $enemy = (int)$enemy;
+  if ($enemy !== $player) {  //異なる手を出した
+    // プレイヤーが勝った場合
+    if (($enemy === 1 && $player === 3) || ($enemy === 2 && $player === 1) || ($enemy === 3 && $player === 2)) {
+      // 相手の台詞
+      $_SESSION['enemy']->sayLose();
+      // 勝ち加算
+      $_SESSION['jankenWinCount'] += 1;
+      $_SESSION['totalJankenWinCount'] += 1;
+      // 結果表示
+      $_SESSION['jankenResult'] = 0; //かち
+    } else {  //プレイヤーが負けた場合
+      // 相手の台詞
+      $_SESSION['enemy']->sayWin();
+      // 負け加算
+      $_SESSION['jankenLoseCount'] += 1;
+      $_SESSION['totalJankenLoseCount'] += 1;
+      // 結果表示
+      $_SESSION['jankenResult'] = 1; //まけ
+    }
+  } else {  //同じ手を出した＝あいこ
+    // 相手の台詞
+    $_SESSION['enemy']->sayDraw();
+    // 結果表示
+    $_SESSION['jankenResult'] = 2; //あいこ
+  }
+}
+
+function playHoi($player, $enemy)
+{
+  $player = (int)$player;
+  $enemy = (int)$enemy;
+  if ($player === $enemy) {  //同じ方向を選んだ
+    if ((int)$_SESSION['jankenResult'] === 0) {  // プレイヤーがじゃんけんに勝った
+      // 相手の台詞
+      $_SESSION['enemy']->sayPicked();
+      // 勝ち加算
+      $_SESSION['hoiWinCount'] += 1;
+      $_SESSION['totalHoiWinCount'] += 1;
+      // 結果表示
+      $hoiResult = 0;  //じゃんけんに勝って当てた
+      // 相手のライフを減らす
+      $_SESSION['enemy']->Damage();
+    } else {  //プレイヤーがじゃんけんに負けた
+      // 相手の台詞
+      $_SESSION['enemy']->sayHit();
+      // 負け加算
+      $_SESSION['hoiLoseCount'] += 1;
+      $_SESSION['totalHoiLoseCount'] += 1;
+      // 結果表示
+      $hoiResult = 1; //じゃんけんに負けて当てられた
+      // プレイヤーのライフを減らす
+      $_SESSION['myself']->damage();
+    }
+  } else {  //異なる方向を選んだ
+    if ((int)$_SESSION['jankenResult'] === 0) {  //プレイヤーがじゃんけんに勝った
+      // 相手の台詞
+      $_SESSION['enemy']->sayAvoid();
+      // 結果表示
+      $hoiResult = 2; //じゃんけんに勝ったけど外した
+    } else {  //プレイヤーがじゃんけんに負けた
+      // 相手の台詞
+      $_SESSION['enemy']->sayMiss();
+      // 結果表示
+      $hoiResult = 3;  // じゃんけんに負けたけど外れた
+    }
+  }
+}
+
+// ===================================
+// 処理
+// ===================================
+// POST送信の有無
+if (!empty($_POST)) {
+  $startFlg = (!empty($_POST['start'])) ? true : false;
+  $checkFlg = (!empty($_POST['check'])) ? true : false;
+  $jankenFlg = (!empty($_POST['janken'])) ? true : false;
+  $aikoFlg = (!empty($_POST['aiko'])) ? true : false;
+  $jankenResultFlg = (!empty($_POST['janken-result'])) ? true : false;
+  $hoiFlg = (!empty($_POST['hoi'])) ? true : false;
+  debug('***** POST送信されました *****');
+  debug('***** POSTの中身→→→' . print_r($_POST, true) . ' *****');
+
+  if ($startFlg) {  //ゲームスタート
+    debug('***** ゲームスタート *****');
+    init();
+    $_SESSION['enemy']->sayGreeting();
+  } elseif ($checkFlg) {  //OKボタンを押した
+    $_SESSION['enemy']->sayWord('じゃんけんぽんっ');
+  } elseif ($aikoFlg) {  //じゃんけんがあいこだった場合
+    $_SESSION['enemy']->sayWord('あいこでしょっ');
+  } elseif ($jankenFlg) {  //じゃんけんする
+    debug('***** じゃんけん *****');
+    // 相手の出した手
+    $enemyHand = (int)$_SESSION['enemy']->selectHand;
+    // プレイヤーが出した手
+    $myHand = (int)$_POST['janken'][0];
+    // じゃんけんする
+    playJanken($myHand, $enemyHand);
+  } elseif ($jankenResultFlg) {  //じゃんけんの結果が勝ちか負けだった
+    $_SESSION['enemy']->sayWord('あっちむいてホイ！');
+  } elseif ($hoiFlg) {  //あっちむいてホイする
+    debug('***** あっちむいてホイ *****');
+    // 相手の選択した方向
+    $enemyDirection = (int)$_SESSION['enemy']->selectDirection();
+    // プレイヤーの選択した方向
+    $myDirection = (int)$_POST['hoi'][0];
+    // あっちむいてホイする
+    playHoi($myDirection, $enemyDirection);
+
+    // 自分のライフが0になったらゲームオーバー
+    if ((int)$_SESSION['myself']->getHp() === 0) {
+      gameOver();
+    } else {
+      // 相手のライフが0になったら次の相手へ
+      if ((int)$_SESSION['enemy']->getHp() === 0) {
+        createEnemy();
+        $_SESSION['takeDownCount'] += 1;
+      }
+    }
+  }
+  $_POST = array();
 }
