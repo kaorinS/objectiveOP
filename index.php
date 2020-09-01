@@ -9,7 +9,7 @@ require('function.php');
 if (!empty($_POST)) {
     $startFlg = (!empty($_POST['start'])) ? true : false;
     $checkFlg = (!empty($_POST['check'])) ? true : false;
-    $jankenFlg = (!empty($_POST['janken'])) ? true : false;
+    $jankenFlg = (!empty($_POST['guu_x']) || !empty($_POST['choki_x']) || !empty($_POST['paa_x'])) ? true : false;
     $aikoFlg = (!empty($_POST['aiko'])) ? true : false;
     $jankenResultFlg = (!empty($_POST['janken-result'])) ? true : false;
     $hoiFlg = (!empty($_POST['hoi'])) ? true : false;
@@ -23,15 +23,24 @@ if (!empty($_POST)) {
         $_SESSION['enemy']->sayGreeting();
     } elseif ($checkFlg) {  //OKボタンを押した
         $_SESSION['enemy']->sayWord('じゃんけんぽんっ');
+        $_SESSION['enemyImg'] = $_SESSION['enemy']->getImgNormal();
     } elseif ($aikoFlg) {  //じゃんけんがあいこだった場合
         $_SESSION['enemy']->sayWord('あいこでしょっ');
     } elseif ($jankenFlg) {  //じゃんけんする
         debug('***** じゃんけん *****');
         // 相手の出した手
-        $enemyHand = (int)$_SESSION['enemy']->selectHand;
+        $enemyHand = (int)$_SESSION['enemy']->selectHand();
         $handImg = displayJanken($enemyHand);
+        debug('相手が出した手→→→' . print_r($handImg));
         // プレイヤーが出した手
-        $myHand = (int)$_POST['janken'][0];
+        if (!empty($_POST['guu_x'])) {
+            $myHand = 0;
+        } elseif (!empty($_POST['choki_x'])) {
+            $myHand = 1;
+        } elseif (!empty($_POST['paa_x'])) {
+            $myHand = 2;
+        }
+        debug('プレイヤーが出した手→→→' . print_r($myHand));
         // じゃんけんする
         playJanken($myHand, $enemyHand);
     } elseif ($jankenResultFlg) {  //じゃんけんの結果が勝ちか負けだった
@@ -59,6 +68,7 @@ if (!empty($_POST)) {
         }
     }
     $_POST = array();
+    // debug('$_SESSIONの中身→→→' . print_r($_SESSION, true));
 }
 ?>
 
@@ -151,7 +161,7 @@ if (!empty($_POST)) {
                                     <span class="name enemy-name"><?= $_SESSION['enemy']->getName(); ?></span>
                                 </div>
                                 <div class="enemy-img-box">
-                                    <img src="<?= $enemyImg ?>" class="enemy-img">
+                                    <img src="<?= $_SESSION['enemyImg'] ?>" class="enemy-img">
                                 </div>
                                 <div class="enemy-life-box">
                                     <?php if ($_SESSION['enemy']->getHp() >= 1) : ?>
@@ -222,9 +232,9 @@ if (!empty($_POST)) {
                             <?php if ($checkFlg || $aikoFlg) : ?>
                                 <!-- じゃんけん選択 -->
                                 <form class="janken-select-box" method="post">
-                                    <input type="image" class="janken -guu" name="janken[]" value="0" src="image/j-guu.png">
-                                    <input type="image" class="janken -choki" name="janken[]" value="1" src="image/j-choki.png">
-                                    <input type="image" class="janken -paa" name="janken[]" value="2" src="image/j-paa.png">
+                                    <input type="image" class="janken -guu" name="guu" value="1" src="image/j-guu.png">
+                                    <input type="image" class="janken -choki" name="choki" src="image/j-choki.png">
+                                    <input type="image" class="janken -paa" name="paa" src="image/j-paa.png">
                                 </form>
                             <?php elseif ($jankenFlg) : ?>
                                 <!-- じゃんけん選択後 -->

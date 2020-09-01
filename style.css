@@ -328,8 +328,10 @@ a {
 .enemy-comment-box2 {
   position: absolute;
   top: 50%;
-  left: 50%;
+  left: 52%;
+  text-align: center;
   transform: translate(-50%, -50%);
+  width: 200px;
 }
 
 /* 相手のアクション */
@@ -459,7 +461,8 @@ a {
 /* 相手の画像 */
 .enemy-img {
   margin: 0 auto;
-  width: 70%;
+  /* width: 70%; */
+  height: 200px;
 }
 
 /* 相手のライフ */
