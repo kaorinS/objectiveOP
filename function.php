@@ -39,7 +39,9 @@ $enemies = array();
 $enemyImg = '';
 // あっちむいてホイの結果
 $hoiResult = '';
-// 結果のグレード
+// じゃんけん、あっちむいてホイの結果表示用コメント
+$playResultDisplay = '';
+// 結果画面のグレード
 $excellent = 10;
 $great = 5;
 
@@ -697,7 +699,7 @@ function playJanken($player, $enemy)
   $enemy = (int)$enemy;
   if ($enemy !== $player) {  //異なる手を出した
     // プレイヤーが勝った場合
-    if (($enemy === 1 && $player === 3) || ($enemy === 2 && $player === 1) || ($enemy === 3 && $player === 2)) {
+    if (($enemy === 0 && $player === 2) || ($enemy === 1 && $player === 0) || ($enemy === 2 && $player === 1)) {
       // 相手の表情
       $enemyImg = $_SESSION['enemy']->getImgSad();
       // 相手の台詞
@@ -725,6 +727,17 @@ function playJanken($player, $enemy)
     $_SESSION['enemy']->sayDraw();
     // 結果表示
     $_SESSION['jankenResult'] = 2; //あいこ
+  }
+}
+
+function displayJanken($key)
+{
+  if ($key === 0) {
+    echo 'image/j-guu.png';
+  } elseif ($key === 1) {
+    echo 'image/j-choki.png';
+  } else {
+    echo 'image/j-paa.png';
   }
 }
 
@@ -779,6 +792,78 @@ function playHoi($player, $enemy)
   }
 }
 
+function displayHoi($key)
+{
+  switch ($key) {
+    case 0:
+      echo '<i class="fas fa-arrow-alt-circle-up"></i>';
+      break;
+    case 1:
+      echo '<i class="fas fa-arrow-alt-circle-down"></i>';
+      break;
+    case 2:
+      echo '<i class="fas fa-arrow-alt-circle-left"></i>';
+      break;
+    case 3:
+      echo '<i class="fas fa-arrow-alt-circle-right"></i>';
+      break;
+  }
+}
+
+function playResultCss($str, $key)
+{
+  if ($str === 1) { //じゃんけんの場合
+    switch ($key) {
+      case 0: //勝ち
+        echo 'win';
+        break;
+      case 1: //負け
+        echo 'lose';
+        break;
+      case 2: //あいこ
+        echo 'draw';
+        break;
+    }
+  } else { //あっちむいてホイの場合
+    switch ($key) {
+      case 0: //じゃんけん勝ち&当てた
+        echo 'win';
+        break;
+      case 1: //じゃんけん負け&当てられた
+        echo 'lose';
+        break;
+      default:
+        echo 'draw';
+    }
+  }
+}
+
+function playResultDisplay($str, $key)
+{
+  if ($str === 1) { //じゃんけんの場合
+    switch ($key) {
+      case 0: //勝ち
+        echo 'かち';
+        break;
+      case 1: //負け
+        echo 'まけ';
+        break;
+      case 2: //あいこ
+        echo 'あいこ';
+        break;
+    }
+  } else { //あっちむいてホイの場合
+    switch ($key) {
+      case 0: //じゃんけん勝ち&当てた
+      case 1: //じゃんけん負け&当てられた
+        echo 'あたった';
+        break;
+      default:
+        echo 'ミス';
+    }
+  }
+}
+
 function resultComment()
 {
   global $excellent;
@@ -792,60 +877,4 @@ function resultComment()
       echo 'がんばったね！';
     }
   }
-}
-
-// ===================================
-// 処理
-// ===================================
-// POST送信の有無
-if (!empty($_POST)) {
-  $startFlg = (!empty($_POST['start'])) ? true : false;
-  $checkFlg = (!empty($_POST['check'])) ? true : false;
-  $jankenFlg = (!empty($_POST['janken'])) ? true : false;
-  $aikoFlg = (!empty($_POST['aiko'])) ? true : false;
-  $jankenResultFlg = (!empty($_POST['janken-result'])) ? true : false;
-  $hoiFlg = (!empty($_POST['hoi'])) ? true : false;
-  debug('***** POST送信されました *****');
-  debug('***** POSTの中身→→→' . print_r($_POST, true) . ' *****');
-
-  if ($startFlg) {  //ゲームスタート
-    debug('***** ゲームスタート *****');
-    init();
-    $_SESSION['enemy']->sayGreeting();
-  } elseif ($checkFlg) {  //OKボタンを押した
-    $_SESSION['enemy']->sayWord('じゃんけんぽんっ');
-  } elseif ($aikoFlg) {  //じゃんけんがあいこだった場合
-    $_SESSION['enemy']->sayWord('あいこでしょっ');
-  } elseif ($jankenFlg) {  //じゃんけんする
-    debug('***** じゃんけん *****');
-    // 相手の出した手
-    $enemyHand = (int)$_SESSION['enemy']->selectHand;
-    // プレイヤーが出した手
-    $myHand = (int)$_POST['janken'][0];
-    // じゃんけんする
-    playJanken($myHand, $enemyHand);
-  } elseif ($jankenResultFlg) {  //じゃんけんの結果が勝ちか負けだった
-    $_SESSION['enemy']->sayWord('あっちむいてホイ！');
-  } elseif ($hoiFlg) {  //あっちむいてホイする
-    debug('***** あっちむいてホイ *****');
-    // 相手の選択した方向
-    $enemyDirection = (int)$_SESSION['enemy']->selectDirection();
-    // プレイヤーの選択した方向
-    $myDirection = (int)$_POST['hoi'][0];
-    // あっちむいてホイする
-    playHoi($myDirection, $enemyDirection);
-
-    // 自分のライフが0になったらゲームオーバー
-    if ((int)$_SESSION['myself']->getHp() === 0) {
-      gameOver();
-    } else {
-      // 相手のライフが0になったらライフを回復して次の相手へ
-      if ((int)$_SESSION['enemy']->getHp() === 0) {
-        $_SESSION['myself']->recovery();
-        createEnemy();
-        $_SESSION['takeDownCount'] += 1;
-      }
-    }
-  }
-  $_POST = array();
 }
