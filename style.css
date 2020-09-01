@@ -217,6 +217,10 @@ a {
   text-shadow: 2px 5px 4px #ffd;
 }
 
+.star-off {
+  color: #ffd;
+}
+
 /* 結果：コメント */
 .result-comment {
   font-size: 5rem;
@@ -352,8 +356,12 @@ a {
 /* サブ画面、選択時コメント */
 .sub-comment-box {
   margin-top: 25px;
-  position: relative;
   text-align: center;
+}
+
+/* サブ画面、じゃんけんorホイ結果 */
+.sub-play-result {
+  position: relative;
 }
 
 /* サブ画面　じゃんけん */
