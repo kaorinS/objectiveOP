@@ -357,7 +357,8 @@ a {
 
 /* サブ画面、選択時コメント */
 .sub-comment-box {
-  margin-top: 25px;
+  margin-top: 40px;
+  position: relative;
   text-align: center;
 }
 
@@ -369,7 +370,7 @@ a {
 /* サブ画面　じゃんけん */
 /* サブ画面　あっちむいてホイ */
 .janken-select-box {
-  margin-top: 25px;
+  margin-top: 50px;
   overflow: hidden;
 }
 
@@ -530,11 +531,16 @@ a {
   font-size: 2rem;
 }
 
-.select-comment.hidden {
+.select-comment.hidden,
+.sub-result-next.hidden {
   visibility: hidden;
 }
 
 .sub-result-comment {
+  border: none;
+  border-radius: 5%;
+  box-shadow: 4px 4px 3px #aaa;
+  color: #fff;
   font-size: 6rem;
   position: absolute;
   top: 50%;
@@ -542,16 +548,46 @@ a {
   transform: translate(-50%, -50%);
 }
 
+.sub-result-comment:hover {
+  cursor: pointer;
+}
+
 .sub-result-comment.win {
+  background: red;
+}
+
+.sub-result-comment.win:hover {
+  background: #fff;
+  border: solid 4px red;
   color: red;
 }
 
 .sub-result-comment.lose {
+  background: blue;
+}
+
+.sub-result-comment.lose:hover {
+  background: #fff;
+  border: solid 4px blue;
   color: blue;
 }
 
 .sub-result-comment.draw {
+  background: orange;
+}
+
+.sub-result-comment.draw:hover {
+  background: #fff;
+  border: solid 4px orange;
   color: orange;
+}
+/* 次へすすむコメント */
+.sub-result-next {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
 }
 
 /* サブ画面　OKボタン */

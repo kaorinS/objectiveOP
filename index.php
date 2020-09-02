@@ -13,17 +13,20 @@ if (!empty($_POST)) {
     $aikoFlg = (!empty($_POST['aiko'])) ? true : false;
     $jankenResultFlg = (!empty($_POST['janken-result'])) ? true : false;
     $hoiFlg = (!empty($_POST['hoi'])) ? true : false;
-    $rematchFlg = (!empty($_POST['rematch'])) ? true : false;
+    $nextEnemyFlg = (!empty($_POST['next-enemy'])) ? true : false;
     debug('***** POST送信されました *****');
-    debug('***** POSTの中身→→→' . print_r($_POST, true) . ' *****');
+    debug('***** POSTの中身→→→' . print_r($_POST, true));
 
     if ($startFlg) {  //ゲームスタート
         debug('***** ゲームスタート *****');
         init();
-        $_SESSION['enemy']->sayGreeting();
     } elseif ($checkFlg) {  //OKボタンを押した
         $_SESSION['enemy']->sayWord('じゃんけんぽんっ');
         $_SESSION['enemyImg'] = $_SESSION['enemy']->getImgNormal();
+        // 自分のライフが0になったらゲームオーバー
+        if ((int)$_SESSION['myself']->getHp() === 0) {
+            gameOver();
+        }
     } elseif ($aikoFlg) {  //じゃんけんがあいこだった場合
         $_SESSION['enemy']->sayWord('あいこでしょっ');
     } elseif ($jankenFlg) {  //じゃんけんする
@@ -31,7 +34,8 @@ if (!empty($_POST)) {
         // 相手の出した手
         $enemyHand = (int)$_SESSION['enemy']->selectHand();
         $handImg = displayJanken($enemyHand);
-        debug('相手が出した手→→→' . print_r($handImg));
+        debug('$handImgの中身→→→' . print_r($handImg, true));
+        debug('相手が出した手→→→' . print_r($handImg, true));
         // プレイヤーが出した手
         if (!empty($_POST['guu_x'])) {
             $myHand = 0;
@@ -40,35 +44,34 @@ if (!empty($_POST)) {
         } elseif (!empty($_POST['paa_x'])) {
             $myHand = 2;
         }
-        debug('プレイヤーが出した手→→→' . print_r($myHand));
+        debug('プレイヤーが出した手→→→' . print_r($myHand, true));
         // じゃんけんする
         playJanken($myHand, $enemyHand);
     } elseif ($jankenResultFlg) {  //じゃんけんの結果が勝ちか負けだった
         $_SESSION['enemy']->sayWord('あっちむいてホイ！');
+        $_SESSION['enemyImg'] = $_SESSION['enemy']->getImgNormal();
     } elseif ($hoiFlg) {  //あっちむいてホイする
         debug('***** あっちむいてホイ *****');
         // 相手の選択した方向
         $enemyDirection = (int)$_SESSION['enemy']->selectDirection();
         $directionImg = displayHoi($enemyDirection);
+        debug('相手が出した方向→→→' . print_r($enemyDirection, true));
         // プレイヤーの選択した方向
-        $myDirection = (int)$_POST['hoi'][0];
+        $directionKey = array_keys($_POST['hoi']);
+        $myDirection = (int)$directionKey[0];
+        debug('プレイヤーの方向→→→' . print_r($myDirection, true));
         // あっちむいてホイする
         playHoi($myDirection, $enemyDirection);
-
-        // 自分のライフが0になったらゲームオーバー
-        if ((int)$_SESSION['myself']->getHp() === 0) {
-            gameOver();
-        }
-    } elseif ($rematchFlg) {
-        // 相手のライフがだったらライフを回復して次の相手へ
-        if ((int)$_SESSION['enemy']->getHp() === 0) {
+    } elseif ($nextEnemyFlg) {
+        // ライフを回復して次の相手へ
+        if ($recoveryFlg) {
             $_SESSION['myself']->recovery();
-            createEnemy();
-            $_SESSION['takeDownCount'] += 1;
         }
+        createEnemy();
+        $_SESSION['takeDownCount'] += 1;
     }
     $_POST = array();
-    // debug('$_SESSIONの中身→→→' . print_r($_SESSION, true));
+    debug('$_SESSIONの中身→→→' . print_r($_SESSION, true));
 }
 ?>
 
@@ -102,7 +105,7 @@ if (!empty($_POST)) {
                 <!-- 結果画面 -->
                 <div class="result main-color">
                     <div class="star-box">
-                        <i class="fas fa-star -result"></i><i class="fas fa-star -result <?php if ($_SESSION['takeDownCount'] < $great) echo 'star-off'; ?>"></i><i class="fas fa-star -result <?php if ($_SESSION['takeDownCount'] >= $great && $_SESSION['takeDownCount'] < $excellent) echo 'star-off'; ?>"></i>
+                        <i class="fas fa-star -result"></i><i class="fas fa-star -result <?php if ($_SESSION['takeDownCount'] < $excellent) echo 'star-off'; ?>"></i><i class="fas fa-star -result <?php if ($_SESSION['takeDownCount'] < $great) echo 'star-off'; ?>"></i>
                     </div>
                     <div class="result-comment">
                         <?php resultComment(); ?>
@@ -154,6 +157,7 @@ if (!empty($_POST)) {
                 </div>
                 <!-- 上部 -->
                 <div class="game-top">
+                    <!-- メイン画面 -->
                     <div class="game-main main-color">
                         <div class="enemy-box">
                             <div class="enemy-box-1">
@@ -168,9 +172,13 @@ if (!empty($_POST)) {
                                         <?php for ($i = 0; $i < $_SESSION['enemy']->getHp(); $i++) : ?>
                                             <span class="enemy-life -h"><i class="fas fa-heart"></i></span>
                                         <?php endfor; ?>
+                                    <?php else : ?>
+                                        <?php for ($i = 0; $i < $_SESSION['enemy']->getHpMax(); $i++) : ?>
+                                            <span class="enemy-life -b"><i class="fas fa-heart-broken"></i></span>
+                                        <?php endfor; ?>
                                     <?php endif; ?>
-                                    <?php if ($_SESSION['enemy']->getHpMax() > $_SESSION['enemy']->getHp()) : ?>
-                                        <?php for ($i = 0; $_SESSION['enemy']->getHpMax() - $_SESSION['enemy']->getHp(); $i++) : ?>
+                                    <?php if (($_SESSION['enemy']->getHp() >= 1) && ($_SESSION['enemy']->getHp() < $_SESSION['enemy']->getHpMax())) : ?>
+                                        <?php for ($i = 0; $i < $_SESSION['enemy']->getHpMax() - $_SESSION['enemy']->getHp(); $i++) : ?>
                                             <span class="enemy-life -b"><i class="fas fa-heart-broken"></i></span>
                                         <?php endfor; ?>
                                     <?php endif; ?>
@@ -184,10 +192,11 @@ if (!empty($_POST)) {
                                     </div>
                                 </div>
                                 <div class="enemy-action-box">
-                                    <?php if (!empty($_POST['janken'])) : ?>
+                                    <?php if ($jankenFlg) : ?>
                                         <!-- じゃんけん -->
                                         <img src="<?= $handImg ?>" alt="" class="enemy-action-img">
-                                    <?php elseif (!empty($_POST['hoi'])) : ?>
+                                    <?php elseif ($hoiFlg) : ?>
+                                        <!-- あっちむいてホイ -->
                                         <div class="enemy-hoi-box">
                                             <span class="enemy-hoi"><?= $directionImg ?></span>
                                         </div>
@@ -196,8 +205,9 @@ if (!empty($_POST)) {
                             </div>
                         </div>
                     </div>
+                    <!--  サブ画面 -->
                     <div class="game-sub">
-                        <?php if ($startFlg || $rematchFlg) : ?>
+                        <?php if ($startFlg || $nextEnemyFlg) : ?>
                             <!-- 新しい相手が出てきたとき -->
                             <div class="sub-comment-start">
                                 <span class="sub-num"><?= $_SESSION['matchNum'] ?></span>かいせんめ<br>
@@ -211,20 +221,12 @@ if (!empty($_POST)) {
                             <!-- じゃんけん・あっちむいてホイのとき -->
                             <div class="sub-comment-box">
                                 <span class="select-comment <?php if ($jankenFlg || $hoiFlg) echo 'hidden'; ?>">▼▼ えらんでね ▼▼</span>
+                                <div class="sub-result-next <?php if (!$jankenFlg && !$hoiFlg) echo 'hidden'; ?>">▼▼クリック▼▼</div>
                                 <form class="sub-play-result" method="post">
-                                    <!-- <span class="sub-result-comment <?php if ($jankenFlg) {
-                                                                                playResultCss(1, $_SESSION['jankenResult']);
-                                                                            } elseif ($hoiFlg) {
-                                                                                playResultCss(2, $hoiResult);
-                                                                            } ?>"><?php if ($jankenFlg) {
-                                                                                        playResultDisplay(1, $_SESSION['jankenResult']);
-                                                                                    } elseif ($hoiFlg) {
-                                                                                        playResultDisplay(2, $hoiResult);
-                                                                                    } ?></span> -->
                                     <?php if ($jankenFlg) : ?>
-                                        <input type="submit" class="sub-result-comment <?php playResultCss(1, $_SESSION['jankenResult']); ?>" value="<?php playResultDisplay(1, $_SESSION['jankenResult']); ?>">
+                                        <input type="submit" class="sub-result-comment <?php playResultCss(1, $_SESSION['jankenResult']); ?>" name="<?= jankenResultName($_SESSION['jankenResult']) ?>" value="<?php playResultDisplay(1, $_SESSION['jankenResult']); ?>">
                                     <?php elseif ($hoiFlg) : ?>
-                                        <input type="submit" class="sub-result-comment <?php playResultCss(2, $hoiResult); ?>" value="<?php playResultDisplay(2, $hoiResult); ?>">
+                                        <input type="submit" class="sub-result-comment <?php playResultCss(2, $hoiResult); ?>" name="<?= hoiResultName() ?>" value="<?php playResultDisplay(2, $hoiResult); ?>">
                                     <?php endif; ?>
                                 </form>
 
@@ -313,25 +315,27 @@ if (!empty($_POST)) {
                                     <?php for ($i = 0; $i < $_SESSION['myself']->getHp(); $i++) : ?>
                                         <span class="my-life"><i class="fas fa-heart"></i></span>
                                     <?php endfor; ?>
-                                    <?php for ($i = 0; $i < $_SESSION['myself']->getHpMax() - $_SESSION['myself']->getHp(); $i++) : ?>
-                                        <span class="my-life"><i class="fas fa-heart-broken"></i></span>
+                                    <?php for ($i = 0; $i < over5OrNot($_SESSION['myself']->getHpMax()) - $_SESSION['myself']->getHp(); $i++) : ?>
+                                        <span class="my-life -broken"><i class="fas fa-heart-broken"></i></span>
                                     <?php endfor; ?>
                                 <?php endif; ?>
                             </div>
-                            <div class="game-life-2">
-                                <?php if ($_SESSION['myself']->getHp() < 6) : ?>
-                                    <?php for ($i = 0; $i < 5; $i++) : ?>
-                                        <span class="my-life"><i class="fas fa-heart-broken"></i></span>
-                                    <?php endfor; ?>
-                                <?php else : ?>
-                                    <?php for ($i = 5; $i < $_SESSION['myself']->getHp(); $i++) : ?>
-                                        <span class="my-life"><i class="fas fa-heart"></i></span>
-                                    <?php endfor; ?>
-                                    <?php for ($i = 5; $i < $_SESSION['myself']->getHpMax() - $_SESSION['myself']->getHp(); $i++) : ?>
-                                        <span class="my-life"><i class="fas fa-heart-broken"></i></span>
-                                    <?php endfor; ?>
-                                <?php endif; ?>
-                            </div>
+                            <?php if ($_SESSION['myself']->getHpMax() > 5) : ?>
+                                <div class="game-life-2">
+                                    <?php if ($_SESSION['myself']->getHp() < 6) : ?>
+                                        <?php for ($i = 0; $i < 5; $i++) : ?>
+                                            <span class="my-life -broken"><i class="fas fa-heart-broken"></i></span>
+                                        <?php endfor; ?>
+                                    <?php else : ?>
+                                        <?php for ($i = 5; $i < $_SESSION['myself']->getHp(); $i++) : ?>
+                                            <span class="my-life"><i class="fas fa-heart"></i></span>
+                                        <?php endfor; ?>
+                                        <?php for ($i = 0; $i < $_SESSION['myself']->getHpMax() - $_SESSION['myself']->getHp(); $i++) : ?>
+                                            <span class="my-life -broken"><i class="fas fa-heart-broken"></i></span>
+                                        <?php endfor; ?>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <form class="game-restart-box" method="post">
                             <input type="submit" class="game-restart" name="start" value="はじめから">

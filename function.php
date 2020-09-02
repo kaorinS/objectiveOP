@@ -17,7 +17,7 @@ ini_set('date.timezone', 'Asia/Tokyo');
 // デバッグ
 // ===================================
 // デバッグフラグ（開発中のみtrue）
-$debug_flg = true;
+$debug_flg = false;
 // デバッグログ関数
 function debug($str)
 {
@@ -40,8 +40,10 @@ $hoiResult = '';
 // じゃんけん、あっちむいてホイの結果表示用コメント
 $playResultDisplay = '';
 // 結果画面のグレード
-$excellent = 10;
-$great = 5;
+$excellent = 5;
+$great = 2;
+// 回復フラグ(trueで回復あり)
+$recoveryFlg = false;
 
 // ===================================
 // クラス
@@ -578,16 +580,15 @@ class Enemy extends Life
     debug('***** selectHand 実行*****');
     debug('相手が使えるじゃんけんの手→→→' . print_r($this->jHand, true));
     $key = array_rand($this->jHand);
-    debug('相手が選んだじゃんけん→→→' . print_r($this->jHand[$key], true));
     return $key;
   }
   // あっちむいてホイする(選ばれた方向の中から選択する)
   public function selectDirection()
   {
     debug('***** selectDirection 実行 *****');
-    debug('相手が使える方向→→→' . print_r($this->hDirection));
-    $key = array_rand($this->jHand);
-    debug('相手が選んだ方向→→→' . print_r($this->jHand[$key], true));
+    debug('相手が使える方向→→→' . print_r($this->hDirection, true));
+    $key = array_rand($this->hDirection);
+    debug('相手が選んだ方向→→→' . print_r($this->hDirection[$key], true));
     return $key;
   }
 }
@@ -620,25 +621,25 @@ class Myself extends Life
 // プレイヤー自身
 $myself = new Myself(10, 10);
 // 相手
-$enemies[] = new Enemy('おにいさん', mt_rand(2, 3), Type::MAN1, 'image/blackman1_smile.png', 'image/blackman1_laugh.png', 'image/blackman1_cry.png', Play::canBeUsedHand(jankenPattern::ALL), Play::canBeUseDirection(hoiPattern::RAND2));
-$enemies[] = new Enemy('おねえさん', mt_rand(2, 3), Type::WOMAN1, 'image/blackwoman1_smile.png', 'image/blackwoman1_laugh.png', 'image/blackwoman1_cry.png', Play::canBeUsedHand(jankenPattern::RAND1), Play::canBeUseDirection(hoiPattern::RAND3));
-$enemies[] = new Enemy('おとこのこ', 3, Type::BOY1, 'image/boy03_smile.png', 'image/boy01_laugh.png', 'image/boy04_cry.png', Play::canBeUsedHand(jankenPattern::RAND2), Play::canBeUseDirection(hoiPattern::RAND1));
+$enemies[] = new Enemy('おにいさん', mt_rand(1, 2), Type::MAN1, 'image/blackman1_smile.png', 'image/blackman1_laugh.png', 'image/blackman1_cry.png', Play::canBeUsedHand(jankenPattern::ALL), Play::canBeUseDirection(hoiPattern::RAND2));
+$enemies[] = new Enemy('おねえさん', mt_rand(1, 2), Type::WOMAN1, 'image/blackwoman1_smile.png', 'image/blackwoman1_laugh.png', 'image/blackwoman1_cry.png', Play::canBeUsedHand(jankenPattern::RAND1), Play::canBeUseDirection(hoiPattern::RAND3));
+$enemies[] = new Enemy('おとこのこ', mt_rand(1, 2), Type::BOY1, 'image/boy03_smile.png', 'image/boy01_laugh.png', 'image/boy04_cry.png', Play::canBeUsedHand(jankenPattern::RAND2), Play::canBeUseDirection(hoiPattern::RAND1));
 $enemies[] = new Enemy('おにいさん', 2, Type::MAN2, 'image/business03_smile.png', 'image/business01_laugh.png', 'image/business04_cry.png', Play::canBeUsedHand(jankenPattern::ALL), Play::canBeUseDirection(hoiPattern::RAND2));
-$enemies[] = new Enemy('ねこちゃん', mt_rand(1, 3), Type::CAT, 'image/cat1_smile.png', 'image/cat4_laugh.png', 'image/cat3_cry.png', Play::canBeUsedHand(jankenPattern::GUU), Play::canBeUseDirection(hoiPattern::RAND1));
-$enemies[] = new Enemy('おいしゃさん', mt_rand(2, 3), Type::MAN2, 'image/doctor1_smile.png', 'image/doctor1_laugh.png', 'image/doctor1_cry.png', Play::canBeUsedHand(jankenPattern::RAND2), Play::canBeUseDirection(hoiPattern::ALL));
-$enemies[] = new Enemy('おいしゃさん', mt_rand(2, 3), Type::WOMAN1, 'image/doctorw1_smile.png', 'image/doctorw1_laugh.png', 'image/doctorw1_cry.png', Play::canBeUsedHand(jankenPattern::CHOKI), Play::canBeUseDirection(hoiPattern::RAND2));
-$enemies[] = new Enemy('いぬさん', mt_rand(2, 4), Type::DOG, 'image/dog1_smile.png', 'image/dog4_laugh.png', 'image/dog3_cry.png', Play::canBeUsedHand(jankenPattern::RAND1), Play::canBeUseDirection(hoiPattern::RAND1));
-$enemies[] = new Enemy('おんなのこ', mt_rand(2, 3), Type::GIRL1, 'image/girl03_smile.png', 'image/girl01_laugh.png', 'image/girl04_cry.png', Play::canBeUsedHand(jankenPattern::RAND2), Play::canBeUseDirection(hoiPattern::DOWN));
-$enemies[] = new Enemy('おとうさん', mt_rand(3, 4), Type::MAN1, 'image/man03_smile.png', 'image/man01_laugh.png', 'image/man04_cry.png', Play::canBeUsedHand(jankenPattern::ALL), Play::canBeUseDirection(hoiPattern::ALL));
-$enemies[] = new Enemy('かんごしさん', 2, Type::MAN1, 'image/nurse_man1_smile.png', 'image/nurse_man1_laugh.png', 'image/nurse_man1_cry.png', Play::canBeUsedHand(jankenPattern::PAA), Play::canBeUseDirection(hoiPattern::RAND3));
-$enemies[] = new Enemy('おばあちゃん', mt_rand(1, 3), Type::GRANDPARENTS, 'image/obaasan03_smile.png', 'image/obaasan01_laugh.png', 'image/obaasan01_laugh.png', Play::canBeUsedHand(jankenPattern::RAND1), Play::canBeUseDirection(hoiPattern::RAND1));
-$enemies[] = new Enemy('おかあさん', mt_rand(3, 4), Type::WOMAN2, 'image/obasan03_smile.png', 'image/obasan01_laugh.png', 'image/obasan04_cry.png', Play::canBeUsedHand(jankenPattern::ALL), Play::canBeUseDirection(hoiPattern::ALL));
-$enemies[] = new Enemy('おじいちゃん', mt_rand(1, 3), Type::GRANDPARENTS, 'image/ojiisan03_smile.png', 'image/ojiisan01_laugh.png', 'image/ojiisan01_laugh.png', Play::canBeUsedHand(jankenPattern::RAND2), Play::canBeUseDirection(hoiPattern::RAND2));
-$enemies[] = new Enemy('おとこのこ', 3, Type::BOY2, 'image/whiteboy1_1smile.png', 'image/whiteboy1_laugh.png', 'image/whiteboy1_3cry.png', Play::canBeUsedHand(jankenPattern::RAND1), Play::canBeUseDirection(hoiPattern::LEFT));
-$enemies[] = new Enemy('おんなのこ', mt_rand(2, 3), Type::GIRL2, 'image/whitegirl1_1smile.png', 'image/whitegirl1_2laugh.png', 'image/whitegirl1_3cry.png', Play::canBeUsedHand(jankenPattern::ALL), Play::canBeUseDirection(hoiPattern::RAND1));
-$enemies[] = new Enemy('おにいさん', mt_rand(1, 3), Type::MAN1, 'image/whiteman1_smile.png', 'image/whiteman1_laugh.png', 'image/whiteman1_cry.png', Play::canBeUsedHand(jankenPattern::RAND1), Play::canBeUseDirection(hoiPattern::ALL));
-$enemies[] = new Enemy('おねえさん', 2, Type::WOMAN2, 'image/whitewoman1_smile.png', 'image/whitewoman1_laugh.png', 'image/whitewoman1_cry.png', Play::canBeUsedHand(jankenPattern::ALL), Play::canBeUseDirection(hoiPattern::RAND2));
-$enemies[] = new Enemy('おねえさん', 2, Type::WOMAN1, 'image/woman03_smile.png', 'image/woman01_laugh.png', 'image/woman04_cry.png', Play::canBeUsedHand(jankenPattern::GUU), Play::canBeUseDirection(hoiPattern::RIGHT));
+$enemies[] = new Enemy('ねこちゃん', mt_rand(1, 2), Type::CAT, 'image/cat1_smile.png', 'image/cat4_laugh.png', 'image/cat3_cry.png', Play::canBeUsedHand(jankenPattern::GUU), Play::canBeUseDirection(hoiPattern::RAND1));
+$enemies[] = new Enemy('おいしゃさん', mt_rand(1, 2), Type::MAN2, 'image/doctor1_smile.png', 'image/doctor1_laugh.png', 'image/doctor1_cry.png', Play::canBeUsedHand(jankenPattern::RAND2), Play::canBeUseDirection(hoiPattern::ALL));
+$enemies[] = new Enemy('おいしゃさん', mt_rand(1, 2), Type::WOMAN1, 'image/doctorw1_smile.png', 'image/doctorw1_laugh.png', 'image/doctorw1_cry.png', Play::canBeUsedHand(jankenPattern::CHOKI), Play::canBeUseDirection(hoiPattern::RAND2));
+$enemies[] = new Enemy('いぬさん', mt_rand(1, 2), Type::DOG, 'image/dog1_smile.png', 'image/dog4_laugh.png', 'image/dog3_cry.png', Play::canBeUsedHand(jankenPattern::RAND1), Play::canBeUseDirection(hoiPattern::RAND1));
+$enemies[] = new Enemy('おんなのこ', mt_rand(1, 2), Type::GIRL1, 'image/girl03_smile.png', 'image/girl01_laugh.png', 'image/girl04_cry.png', Play::canBeUsedHand(jankenPattern::RAND2), Play::canBeUseDirection(hoiPattern::DOWN));
+$enemies[] = new Enemy('おとうさん', 3, Type::MAN1, 'image/man03_smile.png', 'image/man01_laugh.png', 'image/man04_cry.png', Play::canBeUsedHand(jankenPattern::ALL), Play::canBeUseDirection(hoiPattern::ALL));
+$enemies[] = new Enemy('かんごしさん', mt_rand(1, 2), Type::MAN1, 'image/nurse_man1_smile.png', 'image/nurse_man1_laugh.png', 'image/nurse_man1_cry.png', Play::canBeUsedHand(jankenPattern::PAA), Play::canBeUseDirection(hoiPattern::RAND3));
+$enemies[] = new Enemy('おばあちゃん', mt_rand(1, 2), Type::GRANDPARENTS, 'image/obaasan03_smile.png', 'image/obaasan01_laugh.png', 'image/obaasan01_laugh.png', Play::canBeUsedHand(jankenPattern::RAND1), Play::canBeUseDirection(hoiPattern::RAND1));
+$enemies[] = new Enemy('おかあさん', 3, Type::WOMAN2, 'image/obasan03_smile.png', 'image/obasan01_laugh.png', 'image/obasan04_cry.png', Play::canBeUsedHand(jankenPattern::ALL), Play::canBeUseDirection(hoiPattern::ALL));
+$enemies[] = new Enemy('おじいちゃん', mt_rand(1, 2), Type::GRANDPARENTS, 'image/ojiisan03_smile.png', 'image/ojiisan01_laugh.png', 'image/ojiisan01_laugh.png', Play::canBeUsedHand(jankenPattern::RAND2), Play::canBeUseDirection(hoiPattern::RAND2));
+$enemies[] = new Enemy('おとこのこ', mt_rand(1, 2), Type::BOY2, 'image/whiteboy1_1smile.png', 'image/whiteboy1_laugh.png', 'image/whiteboy1_3cry.png', Play::canBeUsedHand(jankenPattern::RAND1), Play::canBeUseDirection(hoiPattern::LEFT));
+$enemies[] = new Enemy('おんなのこ', mt_rand(1, 2), Type::GIRL2, 'image/whitegirl1_1smile.png', 'image/whitegirl1_2laugh.png', 'image/whitegirl1_3cry.png', Play::canBeUsedHand(jankenPattern::ALL), Play::canBeUseDirection(hoiPattern::RAND1));
+$enemies[] = new Enemy('おにいさん', mt_rand(1, 2), Type::MAN1, 'image/whiteman1_smile.png', 'image/whiteman1_laugh.png', 'image/whiteman1_cry.png', Play::canBeUsedHand(jankenPattern::RAND1), Play::canBeUseDirection(hoiPattern::ALL));
+$enemies[] = new Enemy('おねえさん', mt_rand(1, 2), Type::WOMAN2, 'image/whitewoman1_smile.png', 'image/whitewoman1_laugh.png', 'image/whitewoman1_cry.png', Play::canBeUsedHand(jankenPattern::ALL), Play::canBeUseDirection(hoiPattern::RAND2));
+$enemies[] = new Enemy('おねえさん', mt_rand(1, 2), Type::WOMAN1, 'image/woman03_smile.png', 'image/woman01_laugh.png', 'image/woman04_cry.png', Play::canBeUsedHand(jankenPattern::GUU), Play::canBeUseDirection(hoiPattern::RIGHT));
 
 // ===================================
 // 関数
@@ -653,6 +654,7 @@ function createEnemy()
   $enemy = $enemies[mt_rand(0, $keysMax)];
   $_SESSION['enemy'] = $enemy;
   // セッションを更新する
+  $_SESSION['enemy']->sayGreeting();
   $_SESSION['jankenWinCount'] = 0;
   $_SESSION['jankenLoseCount'] = 0;
   $_SESSION['hoiWinCount'] = 0;
@@ -726,11 +728,22 @@ function playJanken($player, $enemy)
 function displayJanken($key)
 {
   if ($key === 0) {
-    echo 'image/j-guu.png';
+    return 'image/j-guu.png';
   } elseif ($key === 1) {
-    echo 'image/j-choki.png';
+    return 'image/j-choki.png';
   } else {
-    echo 'image/j-paa.png';
+    return 'image/j-paa.png';
+  }
+}
+
+function jankenResultName($key)
+{
+  switch ($key) {
+    case 2:
+      return 'aiko';
+      break;
+    default:
+      return 'janken-result';
   }
 }
 
@@ -788,17 +801,26 @@ function displayHoi($key)
 {
   switch ($key) {
     case 0:
-      echo '<i class="fas fa-arrow-alt-circle-up"></i>';
+      return '<i class="fas fa-arrow-alt-circle-up"></i>';
       break;
     case 1:
-      echo '<i class="fas fa-arrow-alt-circle-down"></i>';
+      return '<i class="fas fa-arrow-alt-circle-down"></i>';
       break;
     case 2:
-      echo '<i class="fas fa-arrow-alt-circle-left"></i>';
+      return '<i class="fas fa-arrow-alt-circle-left"></i>';
       break;
     case 3:
-      echo '<i class="fas fa-arrow-alt-circle-right"></i>';
+      return '<i class="fas fa-arrow-alt-circle-right"></i>';
       break;
+  }
+}
+
+function hoiResultName()
+{
+  if ($_SESSION['enemy']->getHp() === 0) {
+    return 'next-enemy';
+  } else {
+    return 'check';
   }
 }
 
@@ -853,6 +875,16 @@ function playResultDisplay($str, $key)
       default:
         echo 'ミス';
     }
+  }
+}
+
+function over5OrNot($str)
+{
+  $str = (int)$str;
+  if ($str > 5) {
+    return 5;
+  } else {
+    return $_SESSION['myself']->getHpMax();
   }
 }
 
